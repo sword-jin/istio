@@ -261,7 +261,18 @@ func TestRotateAndStdout(t *testing.T) {
 }
 
 func TestRotateMaxBackups(t *testing.T) {
-	dir := t.TempDir()
+	var dir string
+	for {
+		dir = t.TempDir()
+		_, err := os.Stat(dir)
+		if err == nil {
+			t.Log("Tmp directory already exists")
+			continue
+		}
+		if os.IsNotExist(err) {
+			break
+		}
+	}
 
 	file := dir + "/rot.log"
 
