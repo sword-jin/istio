@@ -72,7 +72,7 @@ func (c *Controller) initDiscoveryNamespaceHandlers(discoveryNamespacesFilter fi
 // which requires updating the DiscoveryNamespaceFilter and triggering create/delete event handlers for services/pods/endpoints
 // for membership changes
 func (c *Controller) initMeshWatcherHandler(meshWatcher mesh.Watcher, discoveryNamespacesFilter filter.DiscoveryNamespacesFilter) {
-	meshWatcher.AddMeshHandler(func() {
+	c.meshHandlerRegistration = meshWatcher.AddMeshHandler(func() {
 		discoveryNamespacesFilter.SelectorsChanged(meshWatcher.Mesh().GetDiscoverySelectors())
 	})
 }
@@ -89,12 +89,12 @@ func (a *AmbientIndexImpl) HandleSelectedNamespace(ns string, pods []*corev1.Pod
 
 	// Handle Pods.
 	for _, p := range pods {
-		updates = updates.Merge(a.handlePod(nil, p, false, c))
+		updates = updates.Merge(a.handlePod(nil, p, model.EventAdd, c))
 	}
 
 	// Handle Services.
 	for _, s := range services {
-		updates = updates.Merge(a.handleService(s, false, c))
+		updates = updates.Merge(a.handleService(s, model.EventAdd, c))
 	}
 
 	if c.configCluster {

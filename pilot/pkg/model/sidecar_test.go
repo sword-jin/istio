@@ -2776,6 +2776,16 @@ func TestComputeWildcardHostVirtualServiceIndex(t *testing.T) {
 		},
 		{
 			Meta: config.Meta{
+				Name:              "foo2",
+				Namespace:         "default",
+				CreationTimestamp: olderTime.Add(30 * time.Minute), // This should not be used despite being older than foo
+			},
+			Spec: &networking.VirtualService{
+				Hosts: []string{"foo.example.com"},
+			},
+		},
+		{
+			Meta: config.Meta{
 				Name:              "wild",
 				Namespace:         "default",
 				CreationTimestamp: olderTime,
@@ -2789,6 +2799,16 @@ func TestComputeWildcardHostVirtualServiceIndex(t *testing.T) {
 				Name:              "barwild",
 				Namespace:         "default",
 				CreationTimestamp: oldestTime,
+			},
+			Spec: &networking.VirtualService{
+				Hosts: []string{"*.bar.example.com"},
+			},
+		},
+		{
+			Meta: config.Meta{
+				Name:              "barwild2",
+				Namespace:         "default",
+				CreationTimestamp: olderTime,
 			},
 			Spec: &networking.VirtualService{
 				Hosts: []string{"*.bar.example.com"},
